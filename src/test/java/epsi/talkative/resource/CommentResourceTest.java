@@ -4,6 +4,7 @@ import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.openejb.jee.Beans;
 import org.apache.openejb.jee.WebApp;
 import org.apache.openejb.junit.ApplicationComposer;
 import org.apache.openejb.testing.Classes;
@@ -13,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import epsi.talkative.repository.MockEditorRepository;
+
 @RunWith(ApplicationComposer.class)
 @EnableServices("jaxrs")
 public class CommentResourceTest {
@@ -21,6 +24,13 @@ public class CommentResourceTest {
 	@Classes(TalkativeApplication.class)
 	public WebApp webapp() {
 		return new WebApp().contextRoot("talkative");
+	}
+
+	@Module
+	public Beans managedBeans() {
+		Beans beans = new Beans();
+		beans.getManagedClasses().add(MockEditorRepository.class.getCanonicalName());
+		return beans;
 	}
 
 	@Test
@@ -38,7 +48,7 @@ public class CommentResourceTest {
 	public void cannotRetrieveCommentWhenEditorIsNotKnown() {
 		WebClient client = createWebClient();
 
-		client.path("editors/unknown/articles/www.epsi.fr/i4/myarticle.html/comments").get();
+		client.path("editors").path(MockEditorRepository.UNKNOWN_EDITOR).path("articles/www.epsi.fr/i4/myarticle.html/comments").get();
 
 		Assert.assertEquals(403, client.getResponse().getStatus());
 	}

@@ -1,5 +1,6 @@
 package epsi.talkative.resource;
 
+import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -10,7 +11,8 @@ import epsi.talkative.repository.EditorRepository;
 @Path("editors")
 public class EditorsResource {
 
-	private final EditorRepository editorRepository = new EditorRepository();
+	@Inject
+	private EditorRepository editorRepository;
 
 	@Path("{editor}")
 	public EditorResource getEditor(@PathParam("editor") String editorId) {
