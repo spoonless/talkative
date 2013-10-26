@@ -4,7 +4,7 @@ import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.openejb.jee.Beans;
+import org.apache.openejb.jee.EjbJar;
 import org.apache.openejb.jee.WebApp;
 import org.apache.openejb.junit.ApplicationComposer;
 import org.apache.openejb.testing.Classes;
@@ -18,7 +18,7 @@ import epsi.talkative.repository.MockEditorRepository;
 
 @RunWith(ApplicationComposer.class)
 @EnableServices("jaxrs")
-public class CommentResourceTest {
+public class ArticlesResourceTest {
 
 	@Module
 	@Classes(TalkativeApplication.class)
@@ -27,10 +27,9 @@ public class CommentResourceTest {
 	}
 
 	@Module
-	public Beans managedBeans() {
-		Beans beans = new Beans();
-		beans.getManagedClasses().add(MockEditorRepository.class.getCanonicalName());
-		return beans;
+	@Classes(MockEditorRepository.class)
+	public EjbJar ejb() {
+		return new EjbJar();
 	}
 
 	@Test

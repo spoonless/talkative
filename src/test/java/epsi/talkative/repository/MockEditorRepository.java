@@ -1,9 +1,9 @@
 package epsi.talkative.repository;
 
-import javax.annotation.ManagedBean;
+import javax.ejb.Singleton;
 
-@ManagedBean
-public class MockEditorRepository extends EditorRepository {
+@Singleton
+public class MockEditorRepository implements EditorRepository {
 
 	public static final String UNKNOWN_EDITOR = "unknown";
 
