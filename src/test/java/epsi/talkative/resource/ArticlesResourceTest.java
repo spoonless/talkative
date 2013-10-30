@@ -5,6 +5,7 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.openejb.jee.EjbJar;
+import org.apache.openejb.jee.SingletonBean;
 import org.apache.openejb.jee.WebApp;
 import org.apache.openejb.junit.ApplicationComposer;
 import org.apache.openejb.testing.Classes;
@@ -27,9 +28,8 @@ public class ArticlesResourceTest {
 	}
 
 	@Module
-	@Classes(MockEditorRepository.class)
 	public EjbJar ejb() {
-		return new EjbJar();
+		return new EjbJar().enterpriseBean(new SingletonBean(MockEditorRepository.class));
 	}
 
 	@Test
