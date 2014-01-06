@@ -19,9 +19,4 @@ public class EditorRepository {
 	public boolean contains(String editorId) {
 		return entityManager.find(Editor.class, editorId) != null;
 	}
-
-	public void create(Editor editor) {
-		entityManager.persist(editor);
-	}
-
 }
