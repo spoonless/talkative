@@ -3,6 +3,7 @@
 	<persistence-unit name="talkative">
 		<class>epsi.talkative.repository.Editor</class>
 		<class>epsi.talkative.repository.Article</class>
+		<class>epsi.talkative.repository.Comment</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:mem" />

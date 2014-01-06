@@ -29,4 +29,8 @@ public class ArticleRepository {
 		}
 		return resultList.get(0);
 	}
+
+	public List<Comment> getComments(Editor editor, String articleUrl) throws NotFoundException {
+		return getArticle(editor, articleUrl).getComments();
+	}
 }

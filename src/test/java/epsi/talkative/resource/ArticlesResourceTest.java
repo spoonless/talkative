@@ -1,5 +1,6 @@
 package epsi.talkative.resource;
 
+import java.util.Calendar;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import epsi.talkative.repository.Article;
 import epsi.talkative.repository.ArticleRepository;
+import epsi.talkative.repository.Comment;
 import epsi.talkative.repository.Editor;
 import epsi.talkative.repository.EditorRepository;
 
@@ -46,7 +48,7 @@ public class ArticlesResourceTest {
 	}
 
 	@Module
-	@Classes({ EditorRepository.class, ArticleRepository.class })
+	@Classes({ EditorRepository.class, ArticleRepository.class, Comment.class })
 	public EjbJar ejb() {
 		return new EjbJar();
 	}
@@ -103,14 +105,19 @@ public class ArticlesResourceTest {
 	public void canRetrieveCommentsForArticle() throws Exception {
 		userTransaction.begin();
 		Article article = createArticle();
+		Comment comment = createComment(article);
 		userTransaction.commit();
 
 		WebClient client = createWebClient();
 
-		client.path("editors").path(article.getEditor().getId()).path("articles/www.epsi.fr/monarticle.html/comments").get();
+		CommentsRepresentation comments = client.path("editors").path(article.getEditor().getId()).path("articles/www.epsi.fr/monarticle.html/comments").get(CommentsRepresentation.class);
 
 		Assert.assertEquals(200, client.getResponse().getStatus());
 		Assert.assertEquals(article.getUrl() + "; rel=\"article\"", client.getResponse().getMetadata().getFirst("Link"));
+		Assert.assertEquals(1, comments.getComment().size());
+		Assert.assertEquals(comment.getAuthor(), comments.getComment().get(0).getAuthor());
+		Assert.assertEquals(comment.getText(), comments.getComment().get(0).getText());
+		Assert.assertEquals(comment.getCreationDate().getTimeInMillis(), comments.getComment().get(0).getCreationDate().getTimeInMillis());
 	}
 
 	private WebClient createWebClient() {
@@ -134,5 +141,15 @@ public class ArticlesResourceTest {
 		article.setEditor(createEditor());
 		entityManager.persist(article);
 		return article;
+	}
+
+	private Comment createComment(Article article) {
+		Comment comment = new Comment();
+		comment.setArticle(article);
+		comment.setText("my comment");
+		comment.setAuthor("author");
+		comment.setCreationDate(Calendar.getInstance());
+		entityManager.persist(comment);
+		return comment;
 	}
 }
