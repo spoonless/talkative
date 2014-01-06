@@ -16,7 +16,7 @@ import javax.persistence.TypedQuery;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ArticleRepository {
 
-	@PersistenceContext(unitName = "talkative")
+	@PersistenceContext(unitName = "talkative-persistence")
 	private EntityManager entityManager;
 
 	public Article getArticle(Editor editor, String articleUrl) throws NotFoundException {
