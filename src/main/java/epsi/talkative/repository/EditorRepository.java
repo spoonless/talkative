@@ -1,8 +1,27 @@
 package epsi.talkative.repository;
 
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-public interface EditorRepository {
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
+public class EditorRepository {
 
-	public boolean contains(String editorId);
+	@PersistenceContext(unitName = "talkative")
+	private EntityManager entityManager;
+
+	public boolean contains(String editorId) {
+		return entityManager.find(Editor.class, editorId) != null;
+	}
+
+	public void create(Editor editor) {
+		entityManager.persist(editor);
+	}
 
 }
