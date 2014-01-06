@@ -34,7 +34,7 @@ public class ArticlesResourceTest {
 	@Resource
 	private UserTransaction userTransaction;
 
-	@PersistenceContext(unitName = "talkative")
+	@PersistenceContext(unitName = "talkative-persistence")
 	private EntityManager entityManager;
 
 	@Module
@@ -51,9 +51,7 @@ public class ArticlesResourceTest {
 
 	@Module
 	public PersistenceUnit persistenceUnit() {
-		PersistenceUnit persistenceUnit = new PersistenceUnit("talkative");
-		persistenceUnit.addClass(Editor.class);
-		return persistenceUnit;
+		return new PersistenceUnit("talkative-persistence");
 	}
 
 	@Configuration

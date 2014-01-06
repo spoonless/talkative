@@ -13,7 +13,7 @@ import javax.persistence.PersistenceContext;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class EditorRepository {
 
-	@PersistenceContext(unitName = "talkative")
+	@PersistenceContext(unitName = "talkative-persistence")
 	private EntityManager entityManager;
 
 	public boolean contains(String editorId) {
