@@ -2,7 +2,10 @@ package epsi.talkative.resource;
 
 import java.util.Properties;
 
-import javax.ejb.EJB;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
@@ -17,9 +20,12 @@ import org.apache.openejb.testing.Configuration;
 import org.apache.openejb.testing.EnableServices;
 import org.apache.openejb.testing.Module;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import epsi.talkative.repository.Article;
+import epsi.talkative.repository.ArticleRepository;
 import epsi.talkative.repository.Editor;
 import epsi.talkative.repository.EditorRepository;
 
@@ -27,8 +33,11 @@ import epsi.talkative.repository.EditorRepository;
 @EnableServices("jaxrs")
 public class ArticlesResourceTest {
 
-	@EJB
-	private EditorRepository editorRepository;
+	@Resource
+	private UserTransaction userTransaction;
+
+	@PersistenceContext(unitName = "talkative")
+	private EntityManager entityManager;
 
 	@Module
 	@Classes(TalkativeApplication.class)
@@ -37,7 +46,7 @@ public class ArticlesResourceTest {
 	}
 
 	@Module
-	@Classes(EditorRepository.class)
+	@Classes({ EditorRepository.class, ArticleRepository.class })
 	public EjbJar ejb() {
 		return new EjbJar();
 	}
@@ -59,13 +68,22 @@ public class ArticlesResourceTest {
 		return properties;
 	}
 
+	@Before
+	public void clearDatabase() throws Exception {
+		userTransaction.begin();
+		entityManager.createNativeQuery("truncate schema public and commit").executeUpdate();
+		userTransaction.commit();
+	}
+
 	@Test
-	public void canRetrieveNoCommentForNewArticle() {
-		String editorId = "myEditor";
-		createEditor(editorId);
+	public void canRetrieveNoCommentForNewArticle() throws Exception {
+		userTransaction.begin();
+		Editor editor = createEditor();
+		userTransaction.commit();
+
 		WebClient client = createWebClient();
 
-		String message = client.path("editors").path(editorId).path("articles/www.epsi.fr/i4/mon%20article.html/comments").get(String.class);
+		String message = client.path("editors").path(editor.getId()).path("articles/www.epsi.fr/i4/mon%20article.html/comments").get(String.class);
 
 		Assert.assertEquals(204, client.getResponse().getStatus());
 		Assert.assertEquals("http://www.epsi.fr/i4/mon%20article.html; rel=\"article\"", client.getResponse().getMetadata().getFirst("Link"));
@@ -81,6 +99,20 @@ public class ArticlesResourceTest {
 		Assert.assertEquals(403, client.getResponse().getStatus());
 	}
 
+	@Test
+	public void canRetrieveCommentsForArticle() throws Exception {
+		userTransaction.begin();
+		Article article = createArticle();
+		userTransaction.commit();
+
+		WebClient client = createWebClient();
+
+		client.path("editors").path(article.getEditor().getId()).path("articles/www.epsi.fr/monarticle.html/comments").get();
+
+		Assert.assertEquals(200, client.getResponse().getStatus());
+		Assert.assertEquals(article.getUrl() + "; rel=\"article\"", client.getResponse().getMetadata().getFirst("Link"));
+	}
+
 	private WebClient createWebClient() {
 		WebClient client = WebClient.create("http://localhost:4204/talkative/api");
 		ClientConfiguration config = WebClient.getConfig(client);
@@ -89,10 +121,18 @@ public class ArticlesResourceTest {
 		return client;
 	}
 
-	private Editor createEditor(String editorId) {
+	private Editor createEditor() {
 		Editor editor = new Editor();
-		editor.setId(editorId);
-		editorRepository.create(editor);
+		editor.setId("myEditor");
+		entityManager.persist(editor);
 		return editor;
+	}
+
+	private Article createArticle() {
+		Article article = new Article();
+		article.setUrl("http://www.epsi.fr/monarticle.html");
+		article.setEditor(createEditor());
+		entityManager.persist(article);
+		return article;
 	}
 }

@@ -1,5 +1,6 @@
 package epsi.talkative.repository;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -16,12 +17,14 @@ public class EditorRepository {
 	@PersistenceContext(unitName = "talkative")
 	private EntityManager entityManager;
 
-	public boolean contains(String editorId) {
-		return entityManager.find(Editor.class, editorId) != null;
+	@EJB
+	private ArticleRepository articleRepository;
+
+	public Editor getEditor(String editorId) {
+		return entityManager.find(Editor.class, editorId);
 	}
 
-	public void create(Editor editor) {
-		entityManager.persist(editor);
+	public ArticleRepository getArticleRepository() {
+		return articleRepository;
 	}
-
 }
