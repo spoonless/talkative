@@ -47,7 +47,7 @@
 			<!-- L'ensemble des dépendances de TomEE pour l'exécution des tests -->
 			<groupId>org.apache.openejb</groupId>
 			<artifactId>tomee-jaxrs</artifactId>
-			<version>1.5.2</version>
+			<version>1.6.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -62,7 +62,7 @@
 				<artifactId>tomee-maven-plugin</artifactId>
 				<version>1.0.1</version>
 				<configuration>
-					<tomeeVersion>1.5.2</tomeeVersion>
+					<tomeeVersion>1.6.0</tomeeVersion>
 					<tomeeClassifier>plus</tomeeClassifier>
 				</configuration>
 			</plugin>
