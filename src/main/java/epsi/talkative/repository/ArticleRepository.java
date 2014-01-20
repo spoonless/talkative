@@ -1,5 +1,6 @@
 package epsi.talkative.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -31,6 +32,6 @@ public class ArticleRepository {
 	}
 
 	public List<Comment> getComments(Editor editor, String articleUrl) throws NotFoundException {
-		return getArticle(editor, articleUrl).getComments();
+		return new ArrayList<Comment>(getArticle(editor, articleUrl).getComments());
 	}
 }
