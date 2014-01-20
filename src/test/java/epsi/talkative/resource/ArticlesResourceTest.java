@@ -79,10 +79,10 @@ public class ArticlesResourceTest {
 
 		WebClient client = createWebClient();
 
-		String message = client.path("editors").path(editor.getId()).path("articles/www.epsi.fr/i4/mon%20article.html/comments").get(String.class);
+		String message = client.path("editors").path(editor.getId()).path("articles/www.epsi.fr/i4/mon+article.html/comments").get(String.class);
 
 		Assert.assertEquals(204, client.getResponse().getStatus());
-		Assert.assertEquals("http://www.epsi.fr/i4/mon%20article.html; rel=\"article\"", client.getResponse().getMetadata().getFirst("Link"));
+		Assert.assertEquals("http://www.epsi.fr/i4/mon+article.html; rel=\"article\"", client.getResponse().getMetadata().getFirst("Link"));
 		Assert.assertNull(message);
 	}
 
